@@ -4,8 +4,8 @@ import Home from "../components/Home";
 
 export default (
   <Router>
-    <Routes>
-      <Route path="/" exact element={ <Home /> } />
-    </Routes>
+    <Switch>
+      <Route path="/" exact component={Home} />
+    </Switch>
   </Router>
 );
