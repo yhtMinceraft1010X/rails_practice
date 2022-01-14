@@ -26,15 +26,9 @@ class Tasks extends React.Component {
     const allTasks = tasks.map((task, index) => (
       <div key={index} className="col-md-6 col-lg-4">
         <div className="card mb-4">
-          <img
-            src={task.image}
-            className="card-img-top"
-            alt={`${task.name} image`}
-          />
           <div className="card-body">
             <h5 className="card-title">{task.name}</h5>
             <p> Description: {task.description}</p>
-            <p> Is done? {task.isdone}</p>
             <Link to={`/task/${task.id}`} className="btn custom-button">
               View Task
             </Link>
