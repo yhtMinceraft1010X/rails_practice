@@ -19,6 +19,15 @@
   color: #FFF !important;
   border: none;
 }
+.status-button.btn {
+  background-color: #008000;
+  color: #FFF;
+  border: none;
+}
+.status-button.btn:hover {
+  color: #FFF !important;
+  border: none;
+}
 .hero {
   width: 100vw;
   height: 50vh;

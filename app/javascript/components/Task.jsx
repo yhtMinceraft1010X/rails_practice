@@ -8,6 +8,7 @@ class Task extends React.Component {
 
     this.addHtmlEntities = this.addHtmlEntities.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
+    this.toggleDoneStatus = this.toggleDoneStatus.bind(this);
   }
 
   componentDidMount() {
@@ -34,6 +35,44 @@ class Task extends React.Component {
     return String(str)
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">");
+  }
+
+  toggleDoneStatus() {
+    event.preventDefault();
+    const {
+      match: {
+        params: { id }
+      }
+    } = this.props;
+    const url = `/api/v1/update/${id}`;
+    const { task } = this.state;
+
+    const newDoneStatus = (task.donestatus === "true" ? "false" : "true");
+
+    const body = {
+     name: task.name,
+     description: task.description,
+     donestatus: newDoneStatus
+    };
+
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+      fetch(url, {
+        method: "PATCH",
+        headers: {
+          "X-CSRF-Token": token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error("Network response was not ok.");
+        })
+    .then(response => this.props.history.push(`/task/${response.id}`))
+    .catch(error => console.log(error.message));
+
   }
 
   deleteTask() {
@@ -77,6 +116,11 @@ class Task extends React.Component {
         <div className="container py-5">
           <div className="row">
             <div className="col-sm-12 col-lg-7">
+              {task.donestatus === "true"
+                ? <h5 className="mb-2" style={{color: "green"}}> Done </h5>
+                : <h5 className="mb-2" style={{color: "red"}}> Not Done </h5>
+              }
+              <p> Remember to refresh this page upon toggling Done Status </p>
               <h5 className="mb-2">Description</h5>
               <div
                 dangerouslySetInnerHTML={{
@@ -84,12 +128,19 @@ class Task extends React.Component {
                 }}
               />
             </div>
-            <Link to={`/updateTask/${task.id}`} className="btn custom-button">
-              Update This Task
-            </Link>
+            <div>
+              <Link to={`/updateTask/${task.id}`} className="btn custom-button">
+                Update This Task
+              </Link>
+            </div>
             <div className="col-sm-12 col-lg-2">
               <button type="button" className="btn btn-danger" onClick={this.deleteTask}>
                 Delete Task
+              </button>
+            </div>
+            <div className="col-sm-12 col-lg-2">
+              <button type="button" className="btn status-button" onClick={this.toggleDoneStatus}>
+                Toggle Done/Not Done
               </button>
             </div>
           </div>

@@ -21,6 +21,7 @@ class Tasks extends React.Component {
       .then(response => this.setState({ tasks: response }))
       .catch(() => this.props.history.push("/"));
   }
+
   render() {
     const { tasks } = this.state;
     const allTasks = tasks.map((task, index) => (
@@ -28,6 +29,10 @@ class Tasks extends React.Component {
         <div className="card mb-4">
           <div className="card-body">
             <h5 className="card-title">{task.name}</h5>
+            {task.donestatus === "true"
+              ? <h6 className="card-title" style={{color: "green"}}> Done </h6>
+              : <h6 className="card-title" style={{color: "red"}}> Not Done </h6>
+            }
             <p> Description: {task.description}</p>
             <Link to={`/task/${task.id}`} className="btn custom-button">
               View Task
