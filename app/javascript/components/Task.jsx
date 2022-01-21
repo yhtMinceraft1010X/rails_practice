@@ -4,11 +4,17 @@ import { Link } from "react-router-dom";
 class Task extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { task: { description: "" } };
+    this.state = {
+      task: { description: "" },
+      tags: []
+    };
+    this.tagInput = React.createRef();
 
     this.addHtmlEntities = this.addHtmlEntities.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
     this.toggleDoneStatus = this.toggleDoneStatus.bind(this);
+    this.inputKeyDown = this.inputKeyDown.bind(this);
+    this.removeTag = this.removeTag.bind(this);
   }
 
   componentDidMount() {
@@ -45,7 +51,7 @@ class Task extends React.Component {
       }
     } = this.props;
     const url = `/api/v1/update/${id}`;
-    const { task } = this.state;
+    const { task, tags } = this.state;
 
     const newDoneStatus = (task.donestatus === "true" ? "false" : "true");
 
@@ -101,8 +107,28 @@ class Task extends React.Component {
         .catch(error => console.log(error.message));
     }
 
+  inputKeyDown(e) {
+    const val = e.target.value;
+    const { task, tags } = this.state;
+    if (e.key === 'Enter' && val) {
+      // Check if tag already exists
+      if (tags.find(tag => tag.toLowerCase() === val.toLowerCase())) {
+        return;
+      }
+      this.setState({ tags: [...tags, val]});
+      this.tagInput.value = null;
+    }
+  }
+
+  removeTag(i) {
+    const { task, tags } = this.state;
+    const newTags = [ ...tags ];
+    newTags.splice(i, 1);
+    this.setState({ tags: newTags });
+  }
+
   render() {
-    const { task } = this.state;
+    const { task, tags } = this.state;
     const taskDescription = this.addHtmlEntities(task.description);
 
     return (
@@ -127,6 +153,19 @@ class Task extends React.Component {
                   __html: `${taskDescription}`
                 }}
               />
+            </div>
+            <div className="input-tag">
+              <ul className="input-tag__tags">
+                { tags.map((tag, i) => (
+                  <li key={tag}>
+                    {tag}
+                    <button type="button" onClick={() => {this.removeTag(i);}}>Remove</button>
+                  </li>
+                ))}
+                <li className="input-tag__tags__input">
+                  <input type="text" onKeyDown={this.inputKeyDown} ref={c => { this.tagInput = c; }}/>
+                </li>
+              </ul>
             </div>
             <div>
               <Link to={`/updateTask/${task.id}`} className="btn custom-button">
