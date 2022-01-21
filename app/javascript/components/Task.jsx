@@ -155,6 +155,7 @@ class Task extends React.Component {
               />
             </div>
             <div className="input-tag">
+            <h5> Tags: </h5>
               <ul className="input-tag__tags">
                 { tags.map((tag, i) => (
                   <li key={tag}>
